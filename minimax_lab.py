@@ -13,7 +13,7 @@ for i in range(filas):
     for j in range(columnas):
         fila_temporal.append(".")
     matriz.append(fila_temporal)
-# interpreta las ubicaciones asignadas anteriormente para que puedan ser agregadas al tablero
+#interpreta las ubicaciones asignadas anteriormente para que puedan ser agregadas al tablero
 matriz[pos_gato[0]][pos_gato[1]] = 'G'
 matriz[pos_raton[0]][pos_raton[1]] = 'R'
 matriz[pos_queso[0]][pos_queso[1]] = '#'
@@ -48,7 +48,9 @@ while jugando:
     #se va reemplazando la ubicacion de la G al moverse por el tablero
     matriz[pos_gato[0]][pos_gato[1]] = "G"
 
+    #se cambia la posicion del raton por el "." cada que se mueve
     matriz[pos_raton[0]][pos_raton[1]] = '.'
+
     #movimientos del raton inteligente
     if pos_gato [0] > pos_raton[0]:
         pos_raton[0] = pos_raton[0] - 1
@@ -60,6 +62,7 @@ while jugando:
     elif pos_gato[1] < pos_raton[1]:
         pos_raton[1] = pos_raton [1] + 1
 
+    #se muestra los movimientos del raton con la R
     matriz[pos_raton[0]][pos_raton[1]] = "R"
 
     if pos_gato[0] == pos_raton[0] and pos_gato[1] == pos_raton[1]:
