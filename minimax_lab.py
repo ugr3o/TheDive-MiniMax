@@ -1,11 +1,11 @@
 # le damos los valores para la cantidad de filas y columnas que tendra nuestra matriz
-filas = 6
-columnas = 6
+filas = 5
+columnas = 5
 #creamos la matriz principal
 matriz = []
 #posiciones reales de cada cosa dentro del tablero - posicion inicial
 pos_gato = [4, 4]
-pos_raton = [0, 0]
+pos_raton = [1, 1]
 pos_queso = [2, 3]
 #bucle for para ir agregando puntos en todo el "mapa"
 for i in range(filas):
@@ -38,17 +38,30 @@ while jugando:
         pos_gato[0] = pos_gato[0] + 1
     elif direccion == "a" and pos_gato[1] > 0: #movimiento a la izquierda
         pos_gato[1] = pos_gato[1] - 1
-    elif direccion == "d" and pos_gato[1] < 4:
+    elif direccion == "d" and pos_gato[1] < 4: #movimiento a la derecha
         pos_gato[1] = pos_gato[1] + 1
-    elif direccion == "q":
+    elif direccion == "q":                     #salir del juego
         print("Saliendo del juego...")
         jugando = False
-    else:
+    else:                                      
         print("El movimiento no es valido, o salio del tablero")
-
-
+    #se va reemplazando la ubicacion de la G al moverse por el tablero
     matriz[pos_gato[0]][pos_gato[1]] = "G"
-    
 
+    matriz[pos_raton[0]][pos_raton[1]] = '.'
+    #movimientos del raton inteligente
+    if pos_gato [0] > pos_raton[0]:
+        pos_raton[0] = pos_raton[0] - 1
+    elif pos_gato [0] < pos_raton[0]:
+        pos_raton[0] = pos_raton[0] + 1
 
-    
+    elif pos_gato[1] > pos_raton[1]:
+        pos_raton[1] = pos_raton[1] - 1
+    elif pos_gato[1] < pos_raton[1]:
+        pos_raton[1] = pos_raton [1] + 1
+
+    matriz[pos_raton[0]][pos_raton[1]] = "R"
+
+    if pos_gato[0] == pos_raton[0] and pos_gato[1] == pos_raton[1]:
+        print("El gato a atrapado al raton!")
+        jugando = False
