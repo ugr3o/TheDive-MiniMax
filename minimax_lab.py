@@ -7,6 +7,31 @@ matriz = []
 pos_gato = [4, 4]
 pos_raton = [1, 1]
 pos_queso = [2, 3]
+
+#funciones auxiliares para implementar en minimax
+#calculo de distancia manthattan, donde las posiciones de fila y columna se restan y luego ambas se suman
+def calc_distancia(p1, p2):
+    return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+
+print(calc_distancia(pos_gato,pos_raton))
+
+#se evaluan todos los movimientos posibles dentro del tablero desde cualquier posicion
+def movimientos_posibles(pos):
+    movimientos = []
+    fila = pos[0]
+    col = pos[1]
+    if fila > 0:
+        movimientos.append([fila -1, col])
+    if fila < 4:
+        movimientos.append([fila +1, col])
+    if col > 0:
+        movimientos.append([fila, col -1])
+    if col < 4:
+        movimientos.append([fila, col +1])
+    return(movimientos)
+
+print(movimientos_posibles(pos_gato))
+
 #bucle for para ir agregando puntos en todo el "mapa"
 for i in range(filas):
     fila_temporal = []
@@ -47,23 +72,6 @@ while jugando:
         print("El movimiento no es valido, o salio del tablero")
     #se va reemplazando la ubicacion de la G al moverse por el tablero
     matriz[pos_gato[0]][pos_gato[1]] = "G"
-
-    #se cambia la posicion del raton por el "." cada que se mueve
-    matriz[pos_raton[0]][pos_raton[1]] = '.'
-
-    #movimientos del raton inteligente
-    if pos_gato [0] > pos_raton[0]:
-        pos_raton[0] = pos_raton[0] - 1
-    elif pos_gato [0] < pos_raton[0]:
-        pos_raton[0] = pos_raton[0] + 1
-
-    elif pos_gato[1] > pos_raton[1]:
-        pos_raton[1] = pos_raton[1] - 1
-    elif pos_gato[1] < pos_raton[1]:
-        pos_raton[1] = pos_raton [1] + 1
-
-    #se muestra los movimientos del raton con la R
-    matriz[pos_raton[0]][pos_raton[1]] = "R"
 
     if pos_gato[0] == pos_raton[0] and pos_gato[1] == pos_raton[1]:
         print("El gato a atrapado al raton!")
