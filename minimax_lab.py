@@ -1,12 +1,12 @@
 # le damos los valores para la cantidad de filas y columnas que tendra nuestra matriz
-filas = 5
-columnas = 5
+filas = 7
+columnas = 7
 #creamos la matriz principal
 matriz = []
 #posiciones reales de cada cosa dentro del tablero - posicion inicial
 pos_gato = [4,3]
 pos_raton = [0, 0]
-pos_salida = [4,4]
+pos_salida = [6,6]
 #bucle for para ir agregando puntos en todo el "mapa"
 for i in range(filas):
     fila_temporal = []
@@ -28,11 +28,11 @@ def movimientos_posibles(pos):
     col = pos[1]
     if fila > 0: #si el numero de fila es mayor a 0, esta en fila 1-4
         movimientos.append([fila -1, col]) # se resta una posicion a la fila, ya que es un movimiento posible y eso se agrega a la lista
-    if fila < 4: # si la fila es menor a 4, puede estar en 0-3 
+    if fila < filas -1: # si la fila es menor a 4, puede estar en 0-3 
         movimientos.append([fila +1, col]) # se le suma una posicion en fila, es un movimiento posible
     if col > 0: # si la columna es mayor a 0, esta en columna 1-4
         movimientos.append([fila, col -1]) # se le resta una posicion, es un movimiento posible
-    if col < 4: # si la columna es menor a 4, esta en columna 0-3
+    if col < columnas -1: # si la columna es menor a 4, esta en columna 0-3
         movimientos.append([fila, col +1]) # se le suma una posicion, es un movimiento posible
     return(movimientos) # se retorna los resultados almacenados en la lista movimientos
 
@@ -66,9 +66,9 @@ def mejor_movimiento_raton(pos_gato, pos_raton, pos_salida):
     mejor_mov = None
     mejor_valor = 999999
     for movimiento in movimientos:
-        if movimiento == pos_gato:
+        if pos_raton[0] == pos_gato[0] and pos_raton[1] == pos_gato[1]:
             continue
-        valor = minimax(pos_gato, movimiento,pos_salida, 4, True)
+        valor = minimax(pos_gato, movimiento,pos_salida, 3, True)
         if valor < mejor_valor:
             mejor_valor = valor
             mejor_mov = movimiento
@@ -89,11 +89,11 @@ while jugando:
 
     if direccion == "w" and pos_gato[0] > 0: #movimiendo hacia arriba
         pos_gato[0] = pos_gato[0] - 1
-    elif direccion == "s" and pos_gato[0] < 4: #movimiento hacia abajo 
+    elif direccion == "s" and pos_gato[0] < filas -1: #movimiento hacia abajo 
         pos_gato[0] = pos_gato[0] + 1
     elif direccion == "a" and pos_gato[1] > 0: #movimiento a la izquierda
         pos_gato[1] = pos_gato[1] - 1
-    elif direccion == "d" and pos_gato[1] < 4: #movimiento a la derecha
+    elif direccion == "d" and pos_gato[1] < columnas -1: #movimiento a la derecha
         pos_gato[1] = pos_gato[1] + 1
     elif direccion == "q":                     #salir del juego
         print("Saliendo del juego...")
@@ -103,6 +103,10 @@ while jugando:
     #se va reemplazando la ubicacion de la G al moverse por el tablero
     matriz[pos_gato[0]][pos_gato[1]] = "🐱"
 
+    if pos_raton[0] == pos_gato[0] and pos_raton[1] == pos_gato[1]:
+        print("El gato a atrapado al raton!")
+        jugando = False
+
     if pos_raton != pos_gato:
         matriz[pos_raton[0]][pos_raton[1]]= "⬜" #borra la posicion anterior del raton
 
@@ -110,15 +114,9 @@ while jugando:
 
     if nueva_pos_raton:
         pos_raton = nueva_pos_raton
-        
+
     if pos_raton[0] == pos_salida[0] and pos_raton[1] == pos_salida[1]:
         print("El raton escapo del gato")
         jugando = False
 
-    if pos_raton[0] == pos_gato[0] and pos_raton[1] == pos_gato[1]:
-        print("El gato a atrapado al raton!")
-        jugando = False
-            
     matriz[pos_raton[0]][pos_raton[1]] = "🐁"
-
-    print(f"el raton se movio a: {pos_raton}")
