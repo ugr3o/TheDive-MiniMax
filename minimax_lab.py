@@ -1,72 +1,71 @@
-filas = 7
-columnas = 7
-matriz = []
-pos_gato = [4,3]
-pos_raton = [0, 0]
-pos_salida = [6,6]
+filas = 7 # cantidad de filas del tablero
+columnas = 7 # cantidad de columnas del tablero
+matriz = [] # lista de listas que representa el tablero
+pos_gato = [4,3] # posicion inicial del gato [fila, columna]
+pos_raton = [0, 0] # posicion inicial del raton
+pos_salida = [6,6] # posicion de la salida
 
 for i in range(filas):
     fila_temporal = []
     for j in range(columnas):
-        fila_temporal.append("⬜")
+        fila_temporal.append("⬜") # cada celda inicia vacia
     matriz.append(fila_temporal)
 
-matriz[pos_gato[0]][pos_gato[1]] = '🐱'
-matriz[pos_raton[0]][pos_raton[1]] = '🐁'
-matriz[pos_salida[0]][pos_salida[1]] = '🚪'
+matriz[pos_gato[0]][pos_gato[1]] = '🐱' # se ubica el gato en la matriz
+matriz[pos_raton[0]][pos_raton[1]] = '🐁' # se ubica el raton en la matriz
+matriz[pos_salida[0]][pos_salida[1]] = '🚪' # se ubica la salida en la matriz
 
-def calc_distancia(p1, p2):
+def calc_distancia(p1, p2): # distancia Manhattan: pasos horizontales + verticales
     return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
 
-def movimientos_posibles(pos):
-    movimientos = [] # se crea una lista donde se almaceneran todos los movimientos posibles en cualquier posicion
+def movimientos_posibles(pos): # retorna los movimientos validos desde una posicion
+    movimientos = []
     fila = pos[0]
     col = pos[1]
-    if fila > 0: #si el numero de fila es mayor a 0, esta en fila 1-4
-        movimientos.append([fila -1, col]) # se resta una posicion a la fila, ya que es un movimiento posible y eso se agrega a la lista
-    if fila < filas -1: # si la fila es menor a 4, puede estar en 0-3 
-        movimientos.append([fila +1, col]) # se le suma una posicion en fila, es un movimiento posible
-    if col > 0: # si la columna es mayor a 0, esta en columna 1-4
-        movimientos.append([fila, col -1]) # se le resta una posicion, es un movimiento posible
-    if col < columnas -1: # si la columna es menor a 4, esta en columna 0-3
-        movimientos.append([fila, col +1]) # se le suma una posicion, es un movimiento posible
-    return(movimientos) # se retorna los resultados almacenados en la lista movimientos
+    if fila > 0: # verifica que no este en el borde superior
+        movimientos.append([fila -1, col]) # movimiento hacia arriba
+    if fila < filas -1: # verifica que no este en el borde inferior
+        movimientos.append([fila +1, col]) # movimiento hacia abajo
+    if col > 0: # verifica que no este en el borde izquierdo
+        movimientos.append([fila, col -1]) # movimiento hacia la izquierda
+    if col < columnas -1: # verifica que no este en el borde derecho
+        movimientos.append([fila, col +1]) # movimiento hacia la derecha
+    return(movimientos)
 
-def minimax(pos_gato, pos_raton,pos_salida,profundidad,turno_gato): #minimax utilizara estos 5 parametros para realizar los calculos
+def minimax(pos_gato, pos_raton,pos_salida,profundidad,turno_gato):
 
-    if profundidad == 0: # condicion de si la profundidad es igual a 0, solo retornara la posicion actual del gato y del raton
-        return -10 * calc_distancia(pos_gato, pos_raton) + calc_distancia(pos_raton, pos_salida)#se retorna la posicion actual de gato y el raton
-    
-    if pos_raton[0] == pos_salida[0] and pos_raton[1] == pos_salida[1]:
-        return -999999
-    if pos_gato[0] == pos_raton[0] and pos_gato[1] == pos_raton[1]:
+    if pos_raton[0] == pos_salida[0] and pos_raton[1] == pos_salida[1]: # caso base: raton llego a la salida
         return 999999
-    if turno_gato: # si el turno del gato es True
-        max_valor = -999999 # se le da un valor alto 
-        movimientos = movimientos_posibles(pos_gato) # se estira los movimientos posibles del gato desde su posicion
-        for movimiento in movimientos: # se procede a recorrer entre cada uno de los movimientos dentro de los posibles para que se evaluen
-            valor = minimax(movimiento, pos_raton, pos_salida, profundidad - 1, False)#se guarda en la variable "valor" el movimiento con todos los estados, se le da la posicion del raton y la profundidad
-            if valor > max_valor: # con la informacion guardada en la variable valor, se evalua cual es el menor valor, porque el gato quiere minimizar la distancia con el raton
-                max_valor = valor # el valor maximo pasa a ser igual a el valor obtenido luego de toda la evaluacion
-        return max_valor #se retorna el resultado final con el menor valor para el gato
-    else: # raton
-        min_valor = 999999 # se le asigna un valor muy bajo
-        movimientos = movimientos_posibles(pos_raton) # se estira todos los posibles movimientos desde la posicion del raton de la funcion
-        for movimiento in movimientos: # se recorre cada uno de los movimientos que estan dentro de la lista movimientos
-            valor = minimax(pos_gato, movimiento, pos_salida, profundidad - 1, True) #se guarda en la variable "valor" el movimiento con los estados, posicion del gato profundidad
-            if valor < min_valor: #evalua cual es el mayor valor porque el raton quiere maximizar la distancia entre el gato
-                min_valor = valor # se guarda el valor en la variable max_valor
-        return min_valor # se retorna el valor final con el mayor valor para el raton
+    if pos_gato[0] == pos_raton[0] and pos_gato[1] == pos_raton[1]: # caso base: gato atrapo al raton
+        return -999999
+    if profundidad == 0: # caso base: evalua el estado actual con la heuristica
+        return calc_distancia(pos_gato, pos_raton) - 5 * calc_distancia(pos_raton, pos_salida)
+    if turno_gato: # gato es el minimizador: busca reducir la distancia con el raton
+        min_valor = 999999
+        movimientos = movimientos_posibles(pos_gato)
+        for movimiento in movimientos:
+            valor = minimax(movimiento, pos_raton, pos_salida, profundidad - 1, False)
+            if valor < min_valor: # guarda el menor valor encontrado
+                min_valor = valor
+        return min_valor
+    else: # raton es el maximizador: busca alejarse del gato y llegar a la salida
+        max_valor = -999999
+        movimientos = movimientos_posibles(pos_raton)
+        for movimiento in movimientos:
+            valor = minimax(pos_gato, movimiento, pos_salida, profundidad - 1, True)
+            if valor > max_valor: # guarda el mayor valor encontrado
+                max_valor = valor
+        return max_valor
     
-def mejor_movimiento_raton(pos_gato, pos_raton, pos_salida):
+def mejor_movimiento_raton(pos_gato, pos_raton, pos_salida): # decide el movimiento optimo del raton
     movimientos = movimientos_posibles(pos_raton)
     mejor_mov = None
-    mejor_valor = 999999
+    mejor_valor = -999999
     for movimiento in movimientos:
-        if movimiento[0] == pos_gato[0] and movimiento[1] == pos_gato[1]:
+        if movimiento[0] == pos_gato[0] and movimiento[1] == pos_gato[1]: # descarta moverse al gato
             continue
         valor = minimax(pos_gato, movimiento,pos_salida, 2, True)
-        if valor < mejor_valor:
+        if valor > mejor_valor:
             mejor_valor = valor
             mejor_mov = movimiento
     return mejor_mov
@@ -79,40 +78,49 @@ while jugando:
         print("   ")
     
     print("Ingrese el movimiento que quiere realizar: w:arriba, s:abajo, a: izquierda, d: derecha, q: salir")
-    direccion = input("Su movimiento: ")
+    opcion = input("Su movimiento: ")
 
-    if direccion == "":
+    if opcion == "": # valida que no este vacia la entrada
         print("MOVIMIENTO INVALIDO o estas intentando salir del tablero.")
         continue
-    pos_anterior = [pos_gato[0],pos_gato[1]]
-    if pos_gato == pos_salida:
+    pos_anterior = [pos_gato[0],pos_gato[1]] # guarda la posicion anterior para limpiar la celda
+    if pos_gato == pos_salida: # si el gato estaba sobre la salida, la restaura
         matriz[pos_anterior[0]][pos_anterior[1]] = '🚪'
     else:
         matriz[pos_anterior[0]][pos_anterior[1]] = '⬜'
 
-    if direccion == "w" and pos_gato[0] > 0: #movimiendo hacia arriba
-        pos_gato[0] = pos_gato[0] - 1
-    elif direccion == "s" and pos_gato[0] < filas -1: #movimiento hacia abajo 
-        pos_gato[0] = pos_gato[0] + 1
-    elif direccion == "a" and pos_gato[1] > 0: #movimiento a la izquierda
-        pos_gato[1] = pos_gato[1] - 1
-    elif direccion == "d" and pos_gato[1] < columnas -1: #movimiento a la derecha
-        pos_gato[1] = pos_gato[1] + 1
-    elif direccion == "q":                     #salir del juego
+    if opcion == "q":
         print("Saliendo del juego...")
         jugando = False
+        continue
+    elif opcion == "w" and pos_gato[0] > 0: # mueve arriba si no esta en el borde
+        pos_gato[0] = pos_gato[0] - 1
+    elif opcion == "s" and pos_gato[0] < filas -1: # mueve abajo si no esta en el borde
+        pos_gato[0] = pos_gato[0] + 1
+    elif opcion == "a" and pos_gato[1] > 0: # mueve izquierda si no esta en el borde
+        pos_gato[1] = pos_gato[1] - 1
+    elif opcion == "d" and pos_gato[1] < columnas -1: # mueve derecha si no esta en el borde
+        pos_gato[1] = pos_gato[1] + 1
+    else:
+        print("Estas en el limite del tablero.")
+        matriz[pos_gato[0]][pos_gato[1]] = "🐱" # redibuja el gato antes del continue
+        continue
 
-    #se va reemplazando la ubicacion de la G al moverse por el tablero
-    matriz[pos_gato[0]][pos_gato[1]] = "🐱"
+    matriz[pos_gato[0]][pos_gato[1]] = "🐱" # actualiza la nueva posicion del gato en la matriz
+    
     if pos_raton[0] == pos_gato[0] and pos_raton[1] == pos_gato[1]:
         print("El gato a atrapado al raton!")
         jugando = False
+
     if pos_raton != pos_gato:
-        matriz[pos_raton[0]][pos_raton[1]]= "⬜" #borra la posicion anterior del raton
+        matriz[pos_raton[0]][pos_raton[1]]= "⬜" # limpia la posicion anterior del raton
+
     nueva_pos_raton = mejor_movimiento_raton(pos_gato, pos_raton, pos_salida)
+
     if nueva_pos_raton:
         pos_raton = nueva_pos_raton
+
     if pos_raton[0] == pos_salida[0] and pos_raton[1] == pos_salida[1]:
         print("El raton escapo del gato")
         jugando = False
-    matriz[pos_raton[0]][pos_raton[1]] = "🐁"
+    matriz[pos_raton[0]][pos_raton[1]] = "🐁" # actualiza la nueva posicion del raton en la matriz
